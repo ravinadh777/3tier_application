@@ -1,0 +1,14 @@
+name: myfirstpipeline
+
+on:
+  workflow_dispatch
+
+jobs:
+  clone-repo-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone public repo via HTTPS
+        uses: chihqiang/checkout-action@main
+        with:
+          repo: https://github.com/ravinadh777/3tier_application.git
+          branch: main
