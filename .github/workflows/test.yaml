@@ -10,5 +10,5 @@ jobs:
       - name: Clone public repo via HTTPS
         uses: chihqiang/checkout-action@main
         with:
-          repo: https://github.com/ravinadh77/3tier_application.git
+          repo: https://github.com/ravinadh777/3tier_application.git
           branch: main
