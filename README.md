@@ -5,6 +5,8 @@ A **complete demo** of a 3-tier application with:
 - **DockerHub** image registry
 - **EC2** deployment with Docker Compose
 
+-  ********************
+
 ---
 
 ## 🏗️ Architecture
