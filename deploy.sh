@@ -4,6 +4,7 @@
 #  Usage: bash deploy.sh
 # ============================================================
 set -e
+echo "scripting is goin to start"
 
 DOCKERHUB_USER="massey123"
 
