@@ -49,7 +49,7 @@ function calculate(expression) {
 // ============================================================
 const https = require("https");
 const agent = new https.Agent({
-  rejectUnauthorized: false   // VULNERABLE: disables SSL cert check
+  rejectUnauthorized: true   // Secure: keep SSL cert verification enabled
 });
 
 
