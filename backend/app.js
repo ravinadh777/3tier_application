@@ -1,78 +1,58 @@
 const express = require('express');
-const cors = require('cors');
-const mysql = require('mysql2/promise');
+const fs = require('fs');
+const path = require('path');
+const session = require('express-session');
 
 const app = express();
-app.use(cors());
 app.use(express.json());
 
-// DB config from environment variables
-const dbConfig = {
-  host:     process.env.DB_HOST     || 'db',
-  user:     process.env.DB_USER     || 'appuser',
-  password: process.env.DB_PASSWORD || 'apppassword',
-  database: process.env.DB_NAME     || 'appdb',
-};
+// -------------------------------------------------------------
+// 1. SECURITY HOTSPOTS & VULNERABILITIES
+// -------------------------------------------------------------
 
-// Initialize DB connection with retry
-async function getConnection(retries = 10, delay = 3000) {
-  for (let i = 0; i < retries; i++) {
+// Security Hotspot: Insecure session cookie configuration
+app.use(session({
+    secret: 'insecure_session_secret_xyz',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false, httpOnly: false } // Flagged by SonarQube
+}));
+
+// Vulnerability: Path Traversal / Arbitrary File Read
+app.get('/download', (req, res) => {
+    const userFile = req.query.filename;
+    const targetPath = path.join(__dirname, 'public', userFile); // No sanitization
+    res.sendFile(targetPath);
+});
+
+// Vulnerability: Reflected XSS (Writing unescaped user input to response body)
+app.get('/search', (req, res) => {
+    const term = req.query.q;
+    res.send(`<h1>Search Results for: ${term}</h1>`);
+});
+
+// Vulnerability: Regular Expression Denial of Service (ReDoS)
+app.post('/validate-email', (req, res) => {
+    const emailRegex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    const isValid = emailRegex.test(req.body.email);
+    res.json({ valid: isValid });
+});
+
+// -------------------------------------------------------------
+// 2. RELIABILITY / CODE SMELLS
+// -------------------------------------------------------------
+
+// Code Smell: Useless assignment / Empty catch block
+function processUserData(input) {
+    let result = "";
     try {
-      const conn = await mysql.createConnection(dbConfig);
-      console.log('✅ Database connected');
-      return conn;
-    } catch (err) {
-      console.log(`⏳ DB not ready (attempt ${i+1}/${retries}): ${err.message}`);
-      await new Promise(r => setTimeout(r, delay));
+        result = JSON.parse(input);
+    } catch (e) {
+        // Ignored exception (SonarQube flags empty catch blocks)
     }
-  }
-  throw new Error('Could not connect to database after retries');
+    return result;
 }
 
-let db;
-
-async function init() {
-  db = await getConnection();
-  await db.execute(`
-    CREATE TABLE IF NOT EXISTS notes (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      text VARCHAR(500) NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-  console.log('✅ Table ready');
-}
-
-// Health check
-app.get('/health', (req, res) => res.json({ status: 'ok', service: 'backend' }));
-
-// Get all notes
-app.get('/api/notes', async (req, res) => {
-  try {
-    const [rows] = await db.execute('SELECT * FROM notes ORDER BY created_at DESC');
-    res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+app.listen(3000, () => {
+    console.log('Server running on port 3000');
 });
-
-// Create a note
-app.post('/api/notes', async (req, res) => {
-  const { text } = req.body;
-  if (!text) return res.status(400).json({ error: 'text is required' });
-  try {
-    const [result] = await db.execute('INSERT INTO notes (text) VALUES (?)', [text]);
-    res.status(201).json({ id: result.insertId, text });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-init()
-  .then(() => {
-    app.listen(5000, () => console.log('🚀 Backend running on port 5000'));
-  })
-  .catch(err => {
-    console.error('Failed to initialize:', err);
-    process.exit(1);
-  });
