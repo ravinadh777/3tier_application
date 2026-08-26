@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+
+metadata:
+  name: 3tier-application
+  title: 3-Tier Application
+  description: Three-tier application containing frontend, backend, and database components
+
+  annotations:
+    github.com/project-slug: ravinadh777/3tier_application
+
+spec:
+  type: service
+  lifecycle: development
+  owner: group:default/platform-team
