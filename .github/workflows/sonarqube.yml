@@ -2,7 +2,7 @@ name: sonar code Build
 on:
   push:
     branches:
-      - master
+      - master1234567
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
