@@ -1,25 +1,938 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Test Frontend  Portal devops </title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b1120" />
+  <title>NexOps | DevOps Learning Platform</title>
+
+  <style>
+    :root {
+      --bg: #0b1120;
+      --panel: #141f33;
+      --panel-light: #1b2a42;
+      --border: #2a3c57;
+      --text: #e8eef8;
+      --muted: #9aaac1;
+      --blue: #38bdf8;
+      --purple: #a78bfa;
+      --green: #34d399;
+      --orange: #fbbf24;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .container {
+      width: min(1200px, 92%);
+      margin: auto;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      background: rgba(11, 17, 32, 0.96);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(12px);
+    }
+
+    .navbar {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      font-size: 23px;
+      font-weight: 800;
+      color: var(--blue);
+    }
+
+    .brand span {
+      color: white;
+    }
+
+    nav {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    nav a:hover {
+      color: var(--blue);
+    }
+
+    .hero {
+      padding: 76px 0 44px;
+      background:
+        radial-gradient(ellipse at 80% 10%, #16395b 0, transparent 40%),
+        radial-gradient(ellipse at 10% 80%, #242052 0, transparent 38%);
+    }
+
+    .eyebrow {
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: clamp(36px, 6vw, 62px);
+      line-height: 1.12;
+      letter-spacing: -2px;
+      max-width: 850px;
+    }
+
+    h1 span {
+      color: var(--blue);
+    }
+
+    .hero p {
+      color: var(--muted);
+      max-width: 740px;
+      margin-top: 20px;
+      font-size: 17px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 20px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--panel-light);
+      color: white;
+      font-weight: 700;
+    }
+
+    .btn-primary {
+      background: #0284c7;
+      border-color: #0284c7;
+    }
+
+    .btn:hover {
+      filter: brightness(1.15);
+    }
+
+    section {
+      padding: 44px 0;
+      scroll-margin-top: 85px;
+    }
+
+    .section-heading {
+      margin-bottom: 25px;
+    }
+
+    .section-heading h2 {
+      font-size: clamp(25px, 4vw, 34px);
+      margin-bottom: 8px;
+    }
+
+    .section-heading p {
+      color: var(--muted);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .stat, .card, .phase, .lab {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 14px;
+      padding: 22px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 29px;
+      color: var(--blue);
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 17px;
+    }
+
+    .card-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+
+    .card h3, .phase h3, .lab h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .card p, .phase p, .lab p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 15px;
+    }
+
+    .tag {
+      font-size: 11px;
+      color: #bae6fd;
+      border: 1px solid #245578;
+      background: #102b40;
+      border-radius: 20px;
+      padding: 4px 9px;
+    }
+
+    .curriculum {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .phase {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .phase-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .phase-number {
+      display: grid;
+      place-items: center;
+      min-width: 43px;
+      height: 43px;
+      border-radius: 12px;
+      background: #123550;
+      color: var(--blue);
+      font-weight: 900;
+    }
+
+    .phase .duration {
+      color: var(--green);
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .phase ul {
+      padding-left: 20px;
+      margin-top: 14px;
+      color: #c1ccdd;
+      font-size: 14px;
+    }
+
+    .phase li {
+      margin: 6px 0;
+    }
+
+    .lab {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .lab .btn {
+      margin-top: auto;
+      align-self: flex-start;
+      font-size: 13px;
+      padding: 8px 13px;
+    }
+
+    .architecture {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .arch-node {
+      text-align: center;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 10px;
+    }
+
+    .arch-node strong {
+      display: block;
+      color: var(--blue);
+      margin: 9px 0 4px;
+    }
+
+    .arch-node small {
+      color: var(--muted);
+    }
+
+    .arch-icon {
+      font-size: 28px;
+    }
+
+    .note-panel {
+      background: linear-gradient(135deg, #14263e, #171c35);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 25px;
+    }
+
+    .note-panel p {
+      color: var(--muted);
+      margin: 8px 0 18px;
+    }
+
+    .note-form {
+      display: flex;
+      gap: 10px;
+    }
+
+    input, textarea {
+      width: 100%;
+      background: #0d1728;
+      color: white;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 13px;
+      font: inherit;
+    }
+
+    .note-form button {
+      white-space: nowrap;
+      border: 0;
+      border-radius: 9px;
+      background: #0284c7;
+      color: white;
+      padding: 12px 20px;
+      font-weight: 700;
+    }
+
+    #notes {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .note {
+      padding: 15px;
+      background: #0d1728;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      overflow-wrap: anywhere;
+    }
+
+    .note small {
+      color: var(--muted);
+      display: block;
+      margin-top: 8px;
+    }
+
+    .empty {
+      color: var(--muted);
+      padding: 15px 0;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      margin-top: 30px;
+      padding: 28px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 850px) {
+      .stats, .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .architecture {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .curriculum {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 550px) {
+      .navbar {
+        padding: 15px 0;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      nav {
+        gap: 13px;
+      }
+
+      .hero {
+        padding-top: 48px;
+      }
+
+      .stats, .grid, #notes {
+        grid-template-columns: 1fr;
+      }
+
+      .note-form {
+        flex-direction: column;
+      }
+
+      h1 {
+        letter-spacing: -1px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-    <!-- Accessibility Smell: Missing alt text on image -->
-    <img src="logo.png">
+  <header>
+    <div class="container navbar">
+      <a class="brand" href="#">Nex<span>Ops</span> ⚡</a>
+      <nav aria-label="Main navigation">
+        <a href="#overview">Overview</a>
+        <a href="#curriculum">Curriculum</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#labs">Labs</a>
+        <a href="#notes">Notes</a>
+      </nav>
+    </div>
+  </header>
 
-    <!-- Vulnerability: Inline JavaScript with DOM-based XSS -->
-    <div id="output"></div>
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        const name = params.get('name');
-        
-        // Vulnerability: Direct innerHTML injection from URL params
-        document.getElementById('output').innerHTML = "Welcome back, " + name;
+  <main>
+    <section class="hero" id="overview">
+      <div class="container">
+        <div class="eyebrow">Next-Generation Operations</div>
+        <h1>Learn. Build. <span>Deploy.</span><br />Operate.</h1>
+        <p>
+          A hands-on DevOps and Platform Engineering learning journey.
+          Learn the tools, build real applications, automate delivery,
+          secure workloads, deploy to Kubernetes, and monitor production systems.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#curriculum">Explore Curriculum →</a>
+          <a class="btn" href="#labs">Explore Hands-on Labs</a>
+        </div>
+      </div>
+    </section>
 
-        // Code Smell: Debugging code left in production
-        debugger;
-        console.log("DOM loaded with parameters: ", params);
-    </script>
+    <section>
+      <div class="container stats">
+        <div class="stat">
+          <strong>12</strong>
+          <span>Learning Modules</span>
+        </div>
+        <div class="stat">
+          <strong>8+</strong>
+          <span>Hands-on Labs</span>
+        </div>
+        <div class="stat">
+          <strong>CI/CD</strong>
+          <span>Automated Delivery</span>
+        </div>
+        <div class="stat">
+          <strong>End-to-End</strong>
+          <span>DevOps Workflow</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="curriculum">
+      <div class="container">
+        <div class="section-heading">
+          <h2>DevOps Curriculum</h2>
+          <p>Progress from application development to production-grade operations.</p>
+        </div>
+
+        <div class="curriculum">
+          <article class="phase">
+            <div class="phase-top">
+              <div class="phase-number">01</div>
+              <div>
+                <div class="duration">FOUNDATIONS</div>
+                <h3>DevOps Fundamentals & Linux</h3>
+              </div>
+            </div>
+            <p>Understand how software moves from development to production.</p>
+            <ul>
+              <li>DevOps culture, SDLC, Agile and Scrum</li>
+              <li>Linux commands, permissions, processes and services</li>
+              <li>Shell scripting and troubleshooting</li>
+              <li>Networking, DNS, HTTP, SSH and TLS</li>
+            </ul>
+            <div class="tags"><span class="tag">Linux</span><span class="tag">Bash</span><span class="tag">Networking</span></div>
+          </article>
+
+          <article class="phase">
+            <div class="phase-top">
+              <div class="phase-number">02</div>
+              <div>
+                <div class="duration">SOURCE CONTROL</div>
+                <h3>Git & GitHub</h3>
+              </div>
+            </div>
+            <p>Collaborate safely and maintain traceable application changes.</p>
+            <ul>
+              <li>Repositories, commits, branches and merges</li>
+              <li>Pull requests, code reviews and conflict resolution</li>
+              <li>GitHub issues, tags and release management</li>
+              <li>Branching strategies and team workflows</li>
+            </ul>
+            <div class="tags"><span class="tag">Git</span><span class="tag">GitHub</span><span class="tag">Code Review</span></div>
+          </article>
+
+          <article class="phase">
+            <div class="phase-top">
+              <div class="phase-number">03</div>
+              <div>
+                <div class="duration">APPLICATION DEVELOPMENT</div>
+                <h3>Build a Three-Tier Application</h3>
+              </div>
+            </div>
+            <p>Understand the application before automating its delivery.</p>
+            <ul>
+              <li>Frontend fundamentals: HTML, CSS and JavaScript</li>
+              <li>Node.js and Express REST APIs</li>
+              <li>PostgreSQL, SQL and database initialization</li>
+              <li>Environment variables and application configuration</li>
+            </ul>
+            <div class="tags"><span class="tag">Frontend</span><span class="tag">Node.js</span><span class="tag">PostgreSQL</span></div>
+          </article>
+
+          <article class="phase">
+            <div class="phase-top">
+              <div class="phase-number">04</div>
+              <div>
+                <div class="duration">CONTAINERIZATION</div>
+                <h3>Docker & Docker Compose</h3>
+              </div>
+            </div>
+            <p>Package and run consistent, reproducible application environments.</p>
+            <ul>
+              <li>Images, containers, volumes and networks</li>
+              <li>Dockerfiles, layers and multi-stage builds</li>
+              <li>Docker Compose for multi-tier applications</li>
+              <li>Container logs, health checks and troubleshooting</li>
+            </ul>
+            <div class="tags"><span class="tag">Docker</span><span class="tag">Compose</span><span class="tag">Containers</span></div>
+          </article>
+
+          <article class="phase">
+            <div class="phase-top">
+              <div class="phase-number">05</div>
+              <div>
+                <div class="duration">CI/CD AUTOMATION</div>
+                <h3>Jenkins & GitHub Actions</h3>
+              </div>
+            </div>
+            <p>Automate code validation, image publishing and deployments.</p>
+            <ul>
+              <li>Pipeline stages, jobs, runners and agents</li>
+              <li>Build, test, artifact and deployment workflows</li>
+              <li>Secrets, credentials and environment protection</li>
+              <li>Automated releases, rollback and approvals</li>
+            </ul>
+            <div class="tags"><span class="tag">Jenkins</span><span class="tag">GitHub Actions</span><span class="tag">CI/CD</span></div>
+          </article>
+
+          <article class="phase">
+            <div class="phase-top">
+              <div class="phase-number">06</div>
+              <div>
+                <div class="duration">SECURITY & QUALITY</div>
+                <h3>DevSecOps</h3>
+              </div>
+            </div>
+            <p>Integrate security checks into the software delivery lifecycle.</p>
+            <ul>
+              <li>Static code analysis with SonarQube</li>
+              <li>Container vulnerability scanning with Trivy</li>
+              <li>Dependency scanning and image security</li>
+              <li>Secrets management and least privilege</li>
+            </ul>
+            <div class="tags"><span class="tag">SonarQube</span><span class="tag">Trivy</span><span class="tag">Security</span></div>
+          </article>
+
+          <article class="phase">
+            <div class="phase-top">
+              <div class="phase-number">07</div>
+              <div>
+                <div class="duration">CLOUD & INFRASTRUCTURE</div>
+                <h3>AWS & Infrastructure as Code</h3>
+              </div>
+            </div>
+            <p>Provision secure cloud infrastructure and understand deployment targets.</p>
+            <ul>
+              <li>EC2, IAM, VPC, security groups and ECR</li>
+              <li>Networking, storage and load balancing</li>
+              <li>Terraform fundamentals and state management</li>
+              <li>Infrastructure configuration and cost awareness</li>
+            </ul>
+            <div class="tags"><span class="tag">AWS</span><span class="tag">ECR</span><span class="tag">Terraform</span></div>
+          </article>
+
+          <article class="phase">
+            <div class="phase-top">
+              <div class="phase-number">08</div>
+              <div>
+                <div class="duration">ORCHESTRATION</div>
+                <h3>Kubernetes</h3>
+              </div>
+            </div>
+            <p>Deploy and operate resilient containerized workloads.</p>
+            <ul>
+              <li>Pods, Deployments, Services and Namespaces</li>
+              <li>ConfigMaps, Secrets, Ingress and persistent storage</li>
+              <li>Requests, limits, probes and autoscaling</li>
+              <li>Local clusters using kind and kubectl troubleshooting</li>
+            </ul>
+            <div class="tags"><span class="tag">Kubernetes</span><span class="tag">kubectl</span><span class="tag">kind</span></div>
+          </article>
+
+          <article class="phase">
+            <div class="phase-top">
+              <div class="phase-number">09</div>
+              <div>
+                <div class="duration">PACKAGING & GITOPS</div>
+                <h3>Helm & Argo CD</h3>
+              </div>
+            </div>
+            <p>Manage application releases declaratively with versioned configuration.</p>
+            <ul>
+              <li>Helm charts, templates and values files</li>
+              <li>Application environments and configuration overrides</li>
+              <li>GitOps reconciliation with Argo CD</li>
+              <li>Sync, drift detection and rollback</li>
+            </ul>
+            <div class="tags"><span class="tag">Helm</span><span class="tag">Argo CD</span><span class="tag">GitOps</span></div>
+          </article>
+
+          <article class="phase">
+            <div class="phase-top">
+              <div class="phase-number">10</div>
+              <div>
+                <div class="duration">OBSERVABILITY</div>
+                <h3>Monitoring, Metrics & Logs</h3>
+              </div>
+            </div>
+            <p>Understand application health and diagnose production issues.</p>
+            <ul>
+              <li>Prometheus metrics and Grafana dashboards</li>
+              <li>Loki and centralized log collection</li>
+              <li>Alerts, service health and resource utilization</li>
+              <li>OpenTelemetry and distributed tracing basics</li>
+            </ul>
+            <div class="tags"><span class="tag">Prometheus</span><span class="tag">Grafana</span><span class="tag">Loki</span></div>
+          </article>
+
+          <article class="phase">
+            <div class="phase-top">
+              <div class="phase-number">11</div>
+              <div>
+                <div class="duration">PLATFORM ENGINEERING</div>
+                <h3>Internal Developer Platforms</h3>
+              </div>
+            </div>
+            <p>Make secure, repeatable delivery easier for application teams.</p>
+            <ul>
+              <li>Platform engineering principles and golden paths</li>
+              <li>Backstage developer portals and service catalogs</li>
+              <li>Reusable templates and self-service workflows</li>
+              <li>Policy, standardization and developer experience</li>
+            </ul>
+            <div class="tags"><span class="tag">Backstage</span><span class="tag">IDP</span><span class="tag">Automation</span></div>
+          </article>
+
+          <article class="phase">
+            <div class="phase-top">
+              <div class="phase-number">12</div>
+              <div>
+                <div class="duration">PRODUCTION OPERATIONS</div>
+                <h3>SRE & Capstone Project</h3>
+              </div>
+            </div>
+            <p>Combine the tools into an end-to-end production-style workflow.</p>
+            <ul>
+              <li>SLIs, SLOs, error budgets and incident response</li>
+              <li>Failure simulation, recovery and rollback</li>
+              <li>Scaling, reliability and root-cause analysis</li>
+              <li>Build, secure, deploy and monitor the complete application</li>
+            </ul>
+            <div class="tags"><span class="tag">SRE</span><span class="tag">RCA</span><span class="tag">Capstone</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="architecture">
+      <div class="container">
+        <div class="section-heading">
+          <h2>End-to-End DevOps Workflow</h2>
+          <p>One delivery pipeline connecting source code to production operations.</p>
+        </div>
+
+        <div class="architecture">
+          <div class="arch-node">
+            <div class="arch-icon">💻</div>
+            <strong>Develop</strong>
+            <small>Code & Git</small>
+          </div>
+          <div class="arch-node">
+            <div class="arch-icon">⚙️</div>
+            <strong>Automate</strong>
+            <small>CI & Security</small>
+          </div>
+          <div class="arch-node">
+            <div class="arch-icon">📦</div>
+            <strong>Package</strong>
+            <small>Docker & Registry</small>
+          </div>
+          <div class="arch-node">
+            <div class="arch-icon">☸️</div>
+            <strong>Deploy</strong>
+            <small>Kubernetes & GitOps</small>
+          </div>
+          <div class="arch-node">
+            <div class="arch-icon">📊</div>
+            <strong>Operate</strong>
+            <small>Metrics & Logs</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="labs">
+      <div class="container">
+        <div class="section-heading">
+          <h2>Hands-on Labs</h2>
+          <p>Practice real-world tasks. Mark each lab complete as you finish it.</p>
+        </div>
+
+        <div class="grid">
+          <article class="lab">
+            <div class="card-icon">🐧</div>
+            <h3>Lab 01 — Linux & Git</h3>
+            <p>Create a repository, work with branches, resolve a merge conflict and automate a server check with Bash.</p>
+            <button class="btn" onclick="completeLab(this)">Mark Complete</button>
+          </article>
+
+          <article class="lab">
+            <div class="card-icon">🐳</div>
+            <h3>Lab 02 — Dockerize the App</h3>
+            <p>Containerize the frontend and Express API. Connect the services to PostgreSQL with Compose.</p>
+            <button class="btn" onclick="completeLab(this)">Mark Complete</button>
+          </article>
+
+          <article class="lab">
+            <div class="card-icon">🔄</div>
+            <h3>Lab 03 — CI/CD Pipeline</h3>
+            <p>Build and test the application, scan images, publish versioned artifacts and deploy to EC2.</p>
+            <button class="btn" onclick="completeLab(this)">Mark Complete</button>
+          </article>
+
+          <article class="lab">
+            <div class="card-icon">🛡️</div>
+            <h3>Lab 04 — DevSecOps</h3>
+            <p>Add static analysis, vulnerability scanning, secure secrets and least-privilege access.</p>
+            <button class="btn" onclick="completeLab(this)">Mark Complete</button>
+          </article>
+
+          <article class="lab">
+            <div class="card-icon">☸️</div>
+            <h3>Lab 05 — Kubernetes</h3>
+            <p>Deploy the application to kind. Configure Services, Ingress, health probes and resource limits.</p>
+            <button class="btn" onclick="completeLab(this)">Mark Complete</button>
+          </article>
+
+          <article class="lab">
+            <div class="card-icon">🚀</div>
+            <h3>Lab 06 — GitOps</h3>
+            <p>Package the app with Helm and configure Argo CD to reconcile changes from Git.</p>
+            <button class="btn" onclick="completeLab(this)">Mark Complete</button>
+          </article>
+
+          <article class="lab">
+            <div class="card-icon">📈</div>
+            <h3>Lab 07 — Observability</h3>
+            <p>Build a Grafana dashboard, collect metrics and logs, and configure an actionable alert.</p>
+            <button class="btn" onclick="completeLab(this)">Mark Complete</button>
+          </article>
+
+          <article class="lab">
+            <div class="card-icon">🧰</div>
+            <h3>Lab 08 — Platform Engineering</h3>
+            <p>Create a reusable application template and document a developer self-service workflow.</p>
+            <button class="btn" onclick="completeLab(this)">Mark Complete</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="notes">
+      <div class="container">
+        <div class="note-panel">
+          <h2>📝 Learning Notes</h2>
+          <p>
+            Record commands, troubleshooting steps, interview topics or
+            lessons learned during your DevOps journey.
+          </p>
+
+          <form class="note-form" id="noteForm">
+            <input id="noteInput" type="text"
+              placeholder="Enter a learning note..." required
+              maxlength="500" aria-label="Learning note" />
+            <button type="submit">Save Note</button>
+          </form>
+
+          <div id="notesList" aria-live="polite">
+            <div class="empty">Your notes will appear here.</div>
+          </div>
+          <p id="noteStatus" role="status"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <span>⚡ NexOps — Next-Generation Operations</span>
+      <span>Learn, Build, Deploy & Operate.</span>
+    </div>
+  </footer>
+
+  <script>
+    // Interactive lab checklist
+    function completeLab(button) {
+      const completed = button.dataset.completed === "true";
+
+      button.dataset.completed = String(!completed);
+      button.textContent = completed ? "Mark Complete" : "✓ Completed";
+      button.style.borderColor = completed ? "" : "#34d399";
+      button.style.color = completed ? "" : "#34d399";
+    }
+
+    // Local learning notes: stored in this browser only.
+    const noteForm = document.getElementById("noteForm");
+    const noteInput = document.getElementById("noteInput");
+    const notesList = document.getElementById("notesList");
+    const noteStatus = document.getElementById("noteStatus");
+
+    function getNotes() {
+      try {
+        return JSON.parse(localStorage.getItem("nexops-notes") || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function renderNotes() {
+      const notes = getNotes();
+      notesList.replaceChildren();
+
+      if (notes.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "No notes yet. Add your first learning note!";
+        notesList.appendChild(empty);
+        return;
+      }
+
+      notesList.className = "notes-grid";
+
+      notes.forEach((note) => {
+        const card = document.createElement("article");
+        card.className = "note";
+
+        const content = document.createElement("div");
+        content.textContent = note.text;
+
+        const date = document.createElement("small");
+        date.textContent = note.date;
+
+        card.append(content, date);
+        notesList.appendChild(card);
+      });
+    }
+
+    noteForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const text = noteInput.value.trim();
+      if (!text) return;
+
+      try {
+        const notes = getNotes();
+        notes.unshift({
+          text,
+          date: new Date().toLocaleString()
+        });
+
+        localStorage.setItem("nexops-notes", JSON.stringify(notes));
+        noteInput.value = "";
+        noteStatus.textContent = "Note saved in this browser.";
+        renderNotes();
+      } catch {
+        noteStatus.textContent =
+          "Unable to save the note in this browser.";
+      }
+    });
+
+    renderNotes();
+  </script>
 </body>
 </html>
