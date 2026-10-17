@@ -1,25 +1,108 @@
-name: Build
+
+name: Build and SonarQube Analysis
 
 on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
 jobs:
-  build:
-    name: Build and analyze
+  sonarqube:
+    name: Build and Analyze
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 30
+
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 # v8.1.0
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Validate SonarQube configuration
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${SONAR_HOST_URL:-}" ]]; then
+            echo "::error::SONAR_HOST_URL secret is missing"
+            exit 1
+          fi
+
+          if [[ -z "${SONAR_TOKEN:-}" ]]; then
+            echo "::error::SONAR_TOKEN secret is missing"
+            exit 1
+          fi
+
+          # Remove accidental surrounding whitespace.
+          SONAR_HOST_URL="$(printf '%s' "$SONAR_HOST_URL" |
+            sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+
+          # Remove trailing slash characters.
+          SONAR_HOST_URL="${SONAR_HOST_URL%/}"
+
+          if [[ ! "$SONAR_HOST_URL" =~ ^https?://[^/[:space:]]+(:[0-9]+)?$ ]]; then
+            echo "::error::SONAR_HOST_URL must be a valid base URL"
+            exit 1
+          fi
+
+          echo "SONAR_HOST_URL=$SONAR_HOST_URL" >> "$GITHUB_ENV"
+
+      - name: Verify SonarQube server
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          response_file="$(mktemp)"
+          trap 'rm -f "$response_file"' EXIT
+
+          http_code=$(curl --silent --show-error \
+            --connect-timeout 10 \
+            --max-time 30 \
+            -o "$response_file" \
+            -w '%{http_code}' \
+            -H "Authorization: Bearer ${SONAR_TOKEN}" \
+            "${SONAR_HOST_URL}/api/system/status")
+
+          if [[ "$http_code" != "200" ]]; then
+            echo "::error::SonarQube status request returned HTTP $http_code"
+            cat "$response_file"
+            exit 1
+          fi
+
+          cat "$response_file"
+          echo
+
+          if ! grep -q '"status"[[:space:]]*:[[:space:]]*"UP"' "$response_file"; then
+            echo "::error::SonarQube is reachable but is not UP"
+            exit 1
+          fi
+
+      - name: Set up SonarScanner CLI
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      # If you wish to fail your job when the Quality Gate is red, uncomment the
-      # following lines. This would typically be used to fail a deployment.
-      # - uses: SonarSource/sonarqube-quality-gate-action@cf038b0e0cdecfa9e56c198bbb7d21d751d62c3b # v1.2.0
-      #   timeout-minutes: 5
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: .
+
+      - name: Analysis completed
+        if: success()
+        run: echo "SonarQube analysis submitted successfully."
